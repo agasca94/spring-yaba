@@ -20,6 +20,7 @@ public class PostAssembler implements RepresentationModelAssembler<Post, EntityM
             post, 
             linkTo(methodOn(ProfileController.class).findOne(post.getAuthor().getUsername())).withRel("author"),
             linkTo(methodOn(CommentController.class).findAll(post.getId())).withRel("comments"),
+            linkTo(methodOn(PostController.class).unfavorite(null, post.getId())).withRel("favorite"),
             linkTo(methodOn(PostController.class).findOne(post.getId())).withSelfRel()
         );
     }   

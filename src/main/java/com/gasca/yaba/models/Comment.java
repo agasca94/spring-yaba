@@ -8,12 +8,15 @@ import javax.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import org.springframework.hateoas.server.core.Relation;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Entity
 @Data
 @EqualsAndHashCode(of = {"id"}, callSuper = false)
+@Relation(collectionRelation = "comments")
 public class Comment extends Auditable {
     
     @Id @GeneratedValue

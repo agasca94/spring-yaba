@@ -15,8 +15,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.gasca.yaba.security.ProfileDetails;
 
-import org.hibernate.annotations.Formula;
+import org.springframework.hateoas.server.core.Relation;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -24,6 +28,7 @@ import lombok.EqualsAndHashCode;
 @Entity
 @Data
 @EqualsAndHashCode(of = {"id"}, callSuper = false)
+@Relation(collectionRelation = "posts")
 public class Post extends Auditable {
     
     @Id @GeneratedValue
@@ -35,8 +40,19 @@ public class Post extends Auditable {
     
     private String content;
 
-    @Formula("(select count(*) from favorites f where f.post_id = id)")
-    private int favoritesCount;
+    public int getFavoritesCount() {
+        return likedBy.size();
+    }
+
+    public boolean getIsFavorited() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication instanceof AnonymousAuthenticationToken) {
+            return false;
+        }
+        Profile currentUser = ((ProfileDetails) authentication.getPrincipal()).getProfile();
+
+        return likedBy.contains(currentUser);
+    }
 
     @ManyToOne
     @JoinColumn(name = "author_id")
